@@ -1,11 +1,9 @@
 
 #include "terminal.h"
 
-struct termios	g_orig_termios; // Definition
-
 static void	disable_raw_mode(void)
 {
-	if (tcsetattr(STDIN, TCSAFLUSH, &g_orig_termios) == ERROR)
+	if (tcsetattr(STDIN, TCSAFLUSH, &g_editor.orig_termios) == ERROR)
 		exit_error("tcsetattr");
 }
 
@@ -27,11 +25,11 @@ void	enable_raw_mode(void)
 {
 	struct termios	raw;
 
-	if (tcgetattr(STDIN, &g_orig_termios) == ERROR)
+	if (tcgetattr(STDIN, &g_editor.orig_termios) == ERROR)
 		exit_error("tcgetattr");
 	atexit(disable_raw_mode);
 
-	raw = g_orig_termios;
+	raw = g_editor.orig_termios;
 	set_termios_flags(&raw);
 	set_read_timeout(&raw);
 

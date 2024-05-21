@@ -18,7 +18,7 @@
 # define CLEAR_SCREEN		"\x1b[2J"
 # define CURSOR_TOP_LEFT	"\x1b[H"
 
-void	editor_refresh_screen(void);
+size_t	ft_putstr(const char *str);
 void	exit_error(const char *str);
 
 #endif // UTILS_H

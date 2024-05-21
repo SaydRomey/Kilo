@@ -22,5 +22,7 @@ void	editor_process_keypress(void);
 void	print_ascii(char c);
 
 // output.c
+void	editor_refresh_screen(void);
+void	editor_draw_rows(void);
 
 #endif // KILO_H

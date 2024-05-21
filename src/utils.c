@@ -1,15 +1,25 @@
 
 #include "utils.h"
 
-void	editor_refresh_screen(void)
+size_t	ft_strlen(const char *str)
 {
-	write(STDOUT, CLEAR_SCREEN, 4);
-	write(STDOUT, CURSOR_TOP_LEFT, 3);
+	size_t	len;
+
+	len = 0;
+	while (str[len])
+		len++;
+	return (len);
+}
+
+size_t	ft_putstr(const char *str)
+{
+	return (write(STDOUT, str, ft_strlen(str)));
 }
 
 void	exit_error(const char *str)
 {
-	editor_refresh_screen();
+	ft_putstr(CLEAR_SCREEN);
+	ft_putstr(CURSOR_TOP_LEFT);
 	perror(str);
 	exit(FAILURE);
 }

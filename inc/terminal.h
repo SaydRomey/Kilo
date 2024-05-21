@@ -7,7 +7,14 @@
 # include <stdlib.h> // atexit
 # include "utils.h"
 
-extern struct termios	g_orig_termios; // Declaration only
+struct s_editor_config
+{
+	int	screen_rows;
+	int	screen_cols;
+	struct termios	orig_termios;
+};
+
+extern struct s_editor_config	g_editor;
 
 void	enable_raw_mode(void);
 

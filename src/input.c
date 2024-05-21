@@ -26,7 +26,8 @@ void	editor_process_keypress(void)
 	switch (c)
 	{
 		case CTRL_KEY('q'):
-			editor_refresh_screen();
+			ft_putstr(CLEAR_SCREEN);
+			ft_putstr(CURSOR_TOP_LEFT);
 			exit(0);
 			break;
 	}
