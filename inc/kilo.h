@@ -12,5 +12,15 @@
 # include "utils.h"
 # include "terminal.h"
 
+# define CTRL_KEY(k) ((k) & 0x1f)
+
+// input.c
+char	editor_read_key(void);
+void	editor_process_keypress(void);
+
+// misc.c
+void	print_ascii(char c);
+
+// output.c
 
 #endif // KILO_H

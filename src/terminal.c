@@ -5,7 +5,7 @@ struct termios	g_orig_termios; // Definition
 
 static void	disable_raw_mode(void)
 {
-	if (tcsetattr(STDIN, TCSAFLUSH, &g_orig_termios) == FAILURE)
+	if (tcsetattr(STDIN, TCSAFLUSH, &g_orig_termios) == ERROR)
 		exit_error("tcsetattr");
 }
 
@@ -27,7 +27,7 @@ void	enable_raw_mode(void)
 {
 	struct termios	raw;
 
-	if (tcgetattr(STDIN, &g_orig_termios) == FAILURE)
+	if (tcgetattr(STDIN, &g_orig_termios) == ERROR)
 		exit_error("tcgetattr");
 	atexit(disable_raw_mode);
 
@@ -35,6 +35,6 @@ void	enable_raw_mode(void)
 	set_termios_flags(&raw);
 	set_read_timeout(&raw);
 
-	if (tcsetattr(STDIN, TCSAFLUSH, &raw) == FAILURE)
+	if (tcsetattr(STDIN, TCSAFLUSH, &raw) == ERROR)
 		exit_error("tcsetattr");
 }

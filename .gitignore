@@ -1,0 +1,7 @@
+
+# executable
+kilo
+
+# object files
+*.o
+**/obj/
