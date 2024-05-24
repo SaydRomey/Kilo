@@ -43,7 +43,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) | $(OBJ_DIR)
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
-# @if [ -n "$(wildcard $(OBJS)*.o)" ]; then ...
 clean:
 	@if [ -d "$(OBJ_DIR)" ]; then \
 		$(REMOVE) $(OBJ_DIR); \

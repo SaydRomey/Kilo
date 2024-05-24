@@ -9,8 +9,8 @@
 
 struct s_editor_config
 {
-	int	screen_rows;
-	int	screen_cols;
+	int				screen_rows;
+	int				screen_cols;
 	struct termios	orig_termios;
 };
 
