@@ -39,10 +39,9 @@ int	get_window_size(int *rows, int *cols)
 
 	if (ioctl(STDOUT, TIOCGWINSZ, &ws) == ERROR || ws.ws_col == 0)
 	{
-		// if (ft_putstr("\x1b[999c\x1b[999b") != 12)
-			// return (ERROR);
-		// return (get_cursor_pos(rows, cols));
-		return (ERROR);
+		if (ft_putstr("\x1b[999C\x1b[999B") != 12)
+			return (ERROR);
+		return (get_cursor_pos(rows, cols));
 	}
 	else
 	{

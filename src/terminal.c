@@ -1,5 +1,5 @@
 
-#include "terminal.h"
+#include "kilo.h"
 
 static void	disable_raw_mode(void)
 {
