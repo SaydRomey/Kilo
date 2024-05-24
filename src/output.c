@@ -5,11 +5,23 @@ static void	welcome_msg(struct s_abuf *ab)
 {
 	char	welcome[80];
 	int		welcome_len;
+	int		padding;
 
 	welcome_len = snprintf(welcome, sizeof(welcome), \
 		"Kilo editor -- version %s", KILO_VERSION);
 	if (welcome_len > g_editor.screen_cols)
 		welcome_len = g_editor.screen_cols;
+	padding = (g_editor.screen_cols - welcome_len) / 2;
+	if (padding)
+	{
+		ab_append(ab, "~", 1);
+		padding--;
+	}
+	while (padding)
+	{
+		ab_append(ab, " ", 1);
+		padding--;
+	}
 	ab_append(ab, welcome, welcome_len);
 }
 
