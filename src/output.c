@@ -34,7 +34,7 @@ void	editor_draw_rows(struct s_abuf *ab)
 	{
 		if (y >= g_editor.num_rows)
 		{
-			if (y == g_editor.screen_rows / 3)
+			if (g_editor.num_rows == 0 && y == g_editor.screen_rows / 3)
 				welcome_msg(ab);
 			else
 			{
@@ -43,10 +43,10 @@ void	editor_draw_rows(struct s_abuf *ab)
 		}
 		else
 		{
-			int	len = g_editor.row.size;
+			int	len = g_editor.row[y].size;
 			if (len > g_editor.screen_cols)
 				len = g_editor.screen_cols;
-			ab_append(ab, g_editor.row.chars, len);
+			ab_append(ab, g_editor.row[y].chars, len);
 		}
 		ab_append(ab, "\x1b[K", 3);
 		if (y < g_editor.screen_rows - 1)

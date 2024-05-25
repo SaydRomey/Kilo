@@ -2,16 +2,20 @@
 #ifndef KILO_H
 # define KILO_H
 
-# include <sys/types.h>
-# include <sys/ioctl.h>
-# include <termios.h>
-# include <stdbool.h>
-# include <errno.h>
+# define _DEFAULT_SOURCE
+# define _BSD_SOURCE
+# define _GNU_SOURCE
+
 # include <ctype.h>
+# include <errno.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <unistd.h>
 # include <string.h>
+# include <sys/ioctl.h>
+# include <sys/types.h>
+# include <termios.h>
+# include <unistd.h>
 
 # include "utils.h"
 
@@ -51,7 +55,7 @@ struct s_editor_config
 	int				screen_rows;
 	int				screen_cols;
 	int				num_rows;
-	t_editor_row	row;
+	t_editor_row	*row;
 	struct termios	orig_termios;
 };
 

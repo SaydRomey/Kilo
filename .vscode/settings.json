@@ -1,7 +1,8 @@
 {
 	"files.associations": {
 		"stdlib.h": "c",
-		"kilo.h": "c"
+		"kilo.h": "c",
+		"ioctl.h": "c"
 	},
 	"C_Cpp.errorSquiggles": "disabled"
 }
