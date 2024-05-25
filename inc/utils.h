@@ -18,6 +18,13 @@
 # define CLEAR_SCREEN		"\x1b[2J"
 # define CURSOR_TOP_LEFT	"\x1b[H"
 
+typedef struct s_point
+{
+	int	x;
+	int	y;
+}		t_point;
+
+size_t	ft_strlen(const char *str);
 size_t	ft_putstr(const char *str);
 void	exit_error(const char *str);
 

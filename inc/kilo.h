@@ -2,6 +2,8 @@
 #ifndef KILO_H
 # define KILO_H
 
+# include <sys/types.h>
+# include <sys/ioctl.h>
 # include <termios.h>
 # include <stdbool.h>
 # include <errno.h>
@@ -16,6 +18,19 @@
 # define KILO_VERSION "0.0.1"
 # define CTRL_KEY(k) ((k) & 0x1f)
 
+enum	e_editor_read_key
+{
+	ARROW_LEFT = 1000,
+	ARROW_RIGHT,
+	ARROW_UP,
+	ARROW_DOWN,
+	DEL_KEY,
+	HOME_KEY,
+	END_KEY,
+	PAGE_UP,
+	PAGE_DOWN
+};
+
 struct	s_abuf
 {
 	char	*buffer;
@@ -24,10 +39,19 @@ struct	s_abuf
 
 # define ABUF_INIT	{NULL, 0}
 
+typedef struct s_editor_row
+{
+	int		size;
+	char	*chars;
+}			t_editor_row;
+
 struct s_editor_config
 {
+	t_point			cursor;
 	int				screen_rows;
 	int				screen_cols;
+	int				num_rows;
+	t_editor_row	row;
 	struct termios	orig_termios;
 };
 
@@ -38,17 +62,21 @@ void	ab_append(struct s_abuf *ab, const char *str, int len);
 void	ab_free(struct s_abuf *ab);
 
 // input.c
-char	editor_read_key(void);
+int		editor_read_key(void);
 void	editor_process_keypress(void);
 
 // misc.c
 void	print_ascii(char c);
 
 // output.c
-void	editor_refresh_screen(void);
 void	editor_draw_rows(struct s_abuf *ab);
+void	editor_refresh_screen(void);
 
 // terminal.c
 void	enable_raw_mode(void);
+
+// window_size.c
+int		get_cursor_pos(int *rows, int *cols);
+int		get_window_size(int *rows, int *cols);
 
 #endif // KILO_H

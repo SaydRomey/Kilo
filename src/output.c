@@ -32,11 +32,21 @@ void	editor_draw_rows(struct s_abuf *ab)
 	y = 0;
 	while (y < g_editor.screen_rows)
 	{
-		if (y == g_editor.screen_rows / 3)
-			welcome_msg(ab);
+		if (y >= g_editor.num_rows)
+		{
+			if (y == g_editor.screen_rows / 3)
+				welcome_msg(ab);
+			else
+			{
+				ab_append(ab, "~", 1);
+			}
+		}
 		else
 		{
-			ab_append(ab, "~", 1);
+			int	len = g_editor.row.size;
+			if (len > g_editor.screen_cols)
+				len = g_editor.screen_cols;
+			ab_append(ab, g_editor.row.chars, len);
 		}
 		ab_append(ab, "\x1b[K", 3);
 		if (y < g_editor.screen_rows - 1)
@@ -45,6 +55,15 @@ void	editor_draw_rows(struct s_abuf *ab)
 	}
 }
 
+static void	set_cursor(struct s_abuf *ab)
+{
+	char	buf[32];
+	t_point	*cursor;
+
+	cursor = &g_editor.cursor;
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", cursor->y + 1, cursor->x + 1);
+	ab_append(ab, buf, ft_strlen(buf));
+}
 
 void	editor_refresh_screen(void)
 {
@@ -55,7 +74,7 @@ void	editor_refresh_screen(void)
 
 	editor_draw_rows(&ab);
 
-	ab_append(&ab, "\x1b[H", 3);
+	set_cursor(&ab);
 	ab_append(&ab, "\x1b[?25l", 6);
 
 	ft_putstr(ab.buffer);
