@@ -1,6 +1,18 @@
 
 #include "kilo.h"
 
+void	editor_scroll(void)
+{
+	if (g_editor.cursor.y < g_editor.row_offset)
+	{
+		g_editor.row_offset = g_editor.cursor.y;
+	}
+	if (g_editor.cursor.y >= g_editor.row_offset + g_editor.screen_rows)
+	{
+		g_editor.row_offset = g_editor.cursor.y - g_editor.screen_rows + 1;
+	}
+}
+
 static void	welcome_msg(struct s_abuf *ab)
 {
 	char	welcome[80];
@@ -28,11 +40,13 @@ static void	welcome_msg(struct s_abuf *ab)
 void	editor_draw_rows(struct s_abuf *ab)
 {
 	int	y;
+	int	file_row;
 
 	y = 0;
 	while (y < g_editor.screen_rows)
 	{
-		if (y >= g_editor.num_rows)
+		file_row = y + g_editor.row_offset;
+		if (file_row >= g_editor.num_rows)
 		{
 			if (g_editor.num_rows == 0 && y == g_editor.screen_rows / 3)
 				welcome_msg(ab);
@@ -43,10 +57,10 @@ void	editor_draw_rows(struct s_abuf *ab)
 		}
 		else
 		{
-			int	len = g_editor.row[y].size;
+			int	len = g_editor.row[file_row].size;
 			if (len > g_editor.screen_cols)
 				len = g_editor.screen_cols;
-			ab_append(ab, g_editor.row[y].chars, len);
+			ab_append(ab, g_editor.row[file_row].chars, len);
 		}
 		ab_append(ab, "\x1b[K", 3);
 		if (y < g_editor.screen_rows - 1)
@@ -58,15 +72,16 @@ void	editor_draw_rows(struct s_abuf *ab)
 static void	set_cursor(struct s_abuf *ab)
 {
 	char	buf[32];
-	t_point	*cursor;
 
-	cursor = &g_editor.cursor;
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", cursor->y + 1, cursor->x + 1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", \
+	(g_editor.cursor.y - g_editor.row_offset) + 1, g_editor.cursor.x + 1);
 	ab_append(ab, buf, ft_strlen(buf));
 }
 
 void	editor_refresh_screen(void)
 {
+	editor_scroll();
+
 	struct s_abuf	ab = ABUF_INIT;
 
 	ab_append(&ab, "\x1b[?25l", 6);

@@ -52,6 +52,7 @@ typedef struct s_editor_row
 struct s_editor_config
 {
 	t_point			cursor;
+	int				row_offset;
 	int				screen_rows;
 	int				screen_cols;
 	int				num_rows;

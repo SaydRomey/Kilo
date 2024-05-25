@@ -12,6 +12,7 @@ void	init_editor(void)
 {
 	g_editor.cursor.x = 0;
 	g_editor.cursor.y = 0;
+	g_editor.row_offset = 0;
 	g_editor.num_rows = 0;
 	g_editor.row = NULL;
 

@@ -102,7 +102,7 @@ void	editor_move_cursor(int key)
 			}
 			break;
 		case ARROW_DOWN:
-			if (g_editor.cursor.y != g_editor.screen_rows - 1)
+			if (g_editor.cursor.y < g_editor.num_rows)
 			{
 				g_editor.cursor.y++;
 			}
