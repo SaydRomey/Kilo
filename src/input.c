@@ -87,6 +87,12 @@ int	editor_read_key(void)
 
 void	editor_move_cursor(int key)
 {
+	t_editor_row	*row;
+
+	if (g_editor.cursor.y >= g_editor.num_rows)
+		row = NULL;
+	else
+		row = &g_editor.row[g_editor.cursor.y];
 	switch (key)
 	{
 		case ARROW_UP:
@@ -100,6 +106,11 @@ void	editor_move_cursor(int key)
 			{
 				g_editor.cursor.x--;
 			}
+			else if (g_editor.cursor.y > 0)
+			{
+				g_editor.cursor.y--;
+				g_editor.cursor.x = g_editor.row[g_editor.cursor.y].size;
+			}
 			break;
 		case ARROW_DOWN:
 			if (g_editor.cursor.y < g_editor.num_rows)
@@ -108,11 +119,30 @@ void	editor_move_cursor(int key)
 			}
 			break;
 		case ARROW_RIGHT:
-			if (g_editor.cursor.x != g_editor.screen_cols - 1)
+			if (row && g_editor.cursor.x < row->size)
 			{
 				g_editor.cursor.x++;
 			}
+			else if (row && g_editor.cursor.x == row->size)
+			{
+				g_editor.cursor.y++;
+				g_editor.cursor.x = 0;
+			}
 			break;
+	}
+
+	if (g_editor.cursor.y >= g_editor.num_rows)
+		row = NULL;
+	else
+		row = &g_editor.row[g_editor.cursor.y];
+	int	row_len;
+	if (row)
+		row_len = row->size;
+	else
+		row_len = 0;
+	if (g_editor.cursor.x > row_len)
+	{
+		g_editor.cursor.x = row_len;
 	}
 }
 

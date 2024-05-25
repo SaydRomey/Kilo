@@ -19,7 +19,9 @@
 
 # include "utils.h"
 
-# define KILO_VERSION "0.0.1"
+# define KILO_VERSION 	"0.0.1"
+# define KILO_TAB_STOP	8
+
 # define CTRL_KEY(k) ((k) & 0x1f)
 
 enum	e_editor_read_key
@@ -46,13 +48,16 @@ struct	s_abuf
 typedef struct s_editor_row
 {
 	int		size;
+	int		rsize;
 	char	*chars;
+	char	*render;
 }			t_editor_row;
 
 struct s_editor_config
 {
 	t_point			cursor;
 	int				row_offset;
+	int				col_offset;
 	int				screen_rows;
 	int				screen_cols;
 	int				num_rows;

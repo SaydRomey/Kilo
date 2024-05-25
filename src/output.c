@@ -11,6 +11,14 @@ void	editor_scroll(void)
 	{
 		g_editor.row_offset = g_editor.cursor.y - g_editor.screen_rows + 1;
 	}
+	if (g_editor.cursor.x < g_editor.col_offset)
+	{
+		g_editor.col_offset = g_editor.cursor.x;
+	}
+	if (g_editor.cursor.x >= g_editor.col_offset + g_editor.screen_cols)
+	{
+		g_editor.col_offset = g_editor.cursor.x - g_editor.screen_cols + 1;
+	}
 }
 
 static void	welcome_msg(struct s_abuf *ab)
@@ -57,10 +65,12 @@ void	editor_draw_rows(struct s_abuf *ab)
 		}
 		else
 		{
-			int	len = g_editor.row[file_row].size;
+			int	len = g_editor.row[file_row].rsize - g_editor.col_offset;
+			if (len < 0)
+				len = 0;
 			if (len > g_editor.screen_cols)
 				len = g_editor.screen_cols;
-			ab_append(ab, g_editor.row[file_row].chars, len);
+			ab_append(ab, &g_editor.row[file_row].render[g_editor.col_offset], len);
 		}
 		ab_append(ab, "\x1b[K", 3);
 		if (y < g_editor.screen_rows - 1)
@@ -74,7 +84,8 @@ static void	set_cursor(struct s_abuf *ab)
 	char	buf[32];
 
 	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", \
-	(g_editor.cursor.y - g_editor.row_offset) + 1, g_editor.cursor.x + 1);
+	(g_editor.cursor.y - g_editor.row_offset) + 1, \
+	(g_editor.cursor.x - g_editor.col_offset) + 1);
 	ab_append(ab, buf, ft_strlen(buf));
 }
 
