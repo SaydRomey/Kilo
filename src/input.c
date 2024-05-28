@@ -89,60 +89,60 @@ void	editor_move_cursor(int key)
 {
 	t_editor_row	*row;
 
-	if (g_editor.cursor.y >= g_editor.num_rows)
+	if (E.cursor.y >= E.num_rows)
 		row = NULL;
 	else
-		row = &g_editor.row[g_editor.cursor.y];
+		row = &E.row[E.cursor.y];
 	switch (key)
 	{
 		case ARROW_UP:
-			if (g_editor.cursor.y != 0)
+			if (E.cursor.y != 0)
 			{
-				g_editor.cursor.y--;
+				E.cursor.y--;
 			}
 			break;
 		case ARROW_LEFT:
-			if (g_editor.cursor.x != 0)
+			if (E.cursor.x != 0)
 			{
-				g_editor.cursor.x--;
+				E.cursor.x--;
 			}
-			else if (g_editor.cursor.y > 0)
+			else if (E.cursor.y > 0)
 			{
-				g_editor.cursor.y--;
-				g_editor.cursor.x = g_editor.row[g_editor.cursor.y].size;
+				E.cursor.y--;
+				E.cursor.x = E.row[E.cursor.y].size;
 			}
 			break;
 		case ARROW_DOWN:
-			if (g_editor.cursor.y < g_editor.num_rows)
+			if (E.cursor.y < E.num_rows)
 			{
-				g_editor.cursor.y++;
+				E.cursor.y++;
 			}
 			break;
 		case ARROW_RIGHT:
-			if (row && g_editor.cursor.x < row->size)
+			if (row && E.cursor.x < row->size)
 			{
-				g_editor.cursor.x++;
+				E.cursor.x++;
 			}
-			else if (row && g_editor.cursor.x == row->size)
+			else if (row && E.cursor.x == row->size)
 			{
-				g_editor.cursor.y++;
-				g_editor.cursor.x = 0;
+				E.cursor.y++;
+				E.cursor.x = 0;
 			}
 			break;
 	}
 
-	if (g_editor.cursor.y >= g_editor.num_rows)
+	if (E.cursor.y >= E.num_rows)
 		row = NULL;
 	else
-		row = &g_editor.row[g_editor.cursor.y];
+		row = &E.row[E.cursor.y];
 	int	row_len;
 	if (row)
 		row_len = row->size;
 	else
 		row_len = 0;
-	if (g_editor.cursor.x > row_len)
+	if (E.cursor.x > row_len)
 	{
-		g_editor.cursor.x = row_len;
+		E.cursor.x = row_len;
 	}
 }
 
@@ -161,17 +161,28 @@ void	editor_process_keypress(void)
 			break;
 		
 		case HOME_KEY:
-			g_editor.cursor.x = 0;
+			E.cursor.x = 0;
 			break ;
 		
 		case END_KEY:
-			g_editor.cursor.x = g_editor.screen_cols - 1;
+			if (E.cursor.y < E.num_rows)
+				E.cursor.x = E.row[E.cursor.y].size;
 			break ;
 		
 		case PAGE_UP:
 		case PAGE_DOWN:
 			{
-				times = g_editor.screen_rows;
+				if (c == PAGE_UP)
+				{
+					E.cursor.y = E.row_offset;
+				}
+				else if (c == PAGE_DOWN)
+				{
+					E.cursor.y = E.row_offset + E.screen_rows - 1;
+					if (E.cursor.y > E.num_rows)
+						E.cursor.y = E.num_rows;
+				}
+				times = E.screen_rows;
 				while (times--)
 				{
 					if (c == PAGE_UP)

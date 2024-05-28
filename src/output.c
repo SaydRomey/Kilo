@@ -3,21 +3,28 @@
 
 void	editor_scroll(void)
 {
-	if (g_editor.cursor.y < g_editor.row_offset)
+	E.render_x = 0;
+
+	if (E.cursor.x < E.num_rows)
 	{
-		g_editor.row_offset = g_editor.cursor.y;
+		E.render_x = editor_row_cursorx_to_render_x(&E.row[E.cursor.y], E.cursor.x);
 	}
-	if (g_editor.cursor.y >= g_editor.row_offset + g_editor.screen_rows)
+
+	if (E.cursor.y < E.row_offset)
 	{
-		g_editor.row_offset = g_editor.cursor.y - g_editor.screen_rows + 1;
+		E.row_offset = E.cursor.y;
 	}
-	if (g_editor.cursor.x < g_editor.col_offset)
+	if (E.cursor.y >= E.row_offset + E.screen_rows)
 	{
-		g_editor.col_offset = g_editor.cursor.x;
+		E.row_offset = E.cursor.y - E.screen_rows + 1;
 	}
-	if (g_editor.cursor.x >= g_editor.col_offset + g_editor.screen_cols)
+	if (E.render_x < E.col_offset)
 	{
-		g_editor.col_offset = g_editor.cursor.x - g_editor.screen_cols + 1;
+		E.col_offset = E.render_x;
+	}
+	if (E.render_x >= E.col_offset + E.screen_cols)
+	{
+		E.col_offset = E.render_x - E.screen_cols + 1;
 	}
 }
 
@@ -29,9 +36,9 @@ static void	welcome_msg(struct s_abuf *ab)
 
 	welcome_len = snprintf(welcome, sizeof(welcome), \
 		"Kilo editor -- version %s", KILO_VERSION);
-	if (welcome_len > g_editor.screen_cols)
-		welcome_len = g_editor.screen_cols;
-	padding = (g_editor.screen_cols - welcome_len) / 2;
+	if (welcome_len > E.screen_cols)
+		welcome_len = E.screen_cols;
+	padding = (E.screen_cols - welcome_len) / 2;
 	if (padding)
 	{
 		ab_append(ab, "~", 1);
@@ -51,12 +58,12 @@ void	editor_draw_rows(struct s_abuf *ab)
 	int	file_row;
 
 	y = 0;
-	while (y < g_editor.screen_rows)
+	while (y < E.screen_rows)
 	{
-		file_row = y + g_editor.row_offset;
-		if (file_row >= g_editor.num_rows)
+		file_row = y + E.row_offset;
+		if (file_row >= E.num_rows)
 		{
-			if (g_editor.num_rows == 0 && y == g_editor.screen_rows / 3)
+			if (E.num_rows == 0 && y == E.screen_rows / 3)
 				welcome_msg(ab);
 			else
 			{
@@ -65,18 +72,51 @@ void	editor_draw_rows(struct s_abuf *ab)
 		}
 		else
 		{
-			int	len = g_editor.row[file_row].rsize - g_editor.col_offset;
+			int	len = E.row[file_row].rsize - E.col_offset;
 			if (len < 0)
 				len = 0;
-			if (len > g_editor.screen_cols)
-				len = g_editor.screen_cols;
-			ab_append(ab, &g_editor.row[file_row].render[g_editor.col_offset], len);
+			if (len > E.screen_cols)
+				len = E.screen_cols;
+			ab_append(ab, &E.row[file_row].render[E.col_offset], len);
 		}
 		ab_append(ab, "\x1b[K", 3);
-		if (y < g_editor.screen_rows - 1)
-			ab_append(ab, "\r\n", 2);
+		ab_append(ab, "\r\n", 2);
 		y++;
 	}
+}
+
+void	editor_draw_status_bar(struct s_abuf *ab)
+{
+	char	status[80];
+	char	rstatus[80];
+	char	*filename;
+	int		len;
+	int		rlen;
+
+	ab_append(ab, "\x1b[7m", 4);
+	if (E.filename)
+		filename = E.filename;
+	else
+		filename = "[No Name]";
+	len = snprintf(status, sizeof(status), "%.20s - %d lines", filename, E.num_rows);
+	rlen = snprintf(rstatus, sizeof(rstatus), "%d/%d", E.cursor.y + 1, E.num_rows);
+	if (len > E.screen_cols)
+		len = E.screen_cols;
+	ab_append(ab, status, len);
+	while (len < E.screen_cols)
+	{
+		if (E.screen_cols - len == rlen)
+		{
+			ab_append(ab, rstatus, rlen);
+			break ;
+		}
+		else
+		{
+			ab_append(ab, " ", 1);
+			len++;
+		}
+	}
+	ab_append(ab, "\x1b[m", 3);
 }
 
 static void	set_cursor(struct s_abuf *ab)
@@ -84,8 +124,8 @@ static void	set_cursor(struct s_abuf *ab)
 	char	buf[32];
 
 	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", \
-	(g_editor.cursor.y - g_editor.row_offset) + 1, \
-	(g_editor.cursor.x - g_editor.col_offset) + 1);
+	(E.cursor.y - E.row_offset) + 1, \
+	(E.render_x - E.col_offset) + 1);
 	ab_append(ab, buf, ft_strlen(buf));
 }
 
@@ -99,6 +139,7 @@ void	editor_refresh_screen(void)
 	ab_append(&ab, "\x1b[H", 3);
 
 	editor_draw_rows(&ab);
+	editor_draw_status_bar(&ab);
 
 	set_cursor(&ab);
 	ab_append(&ab, "\x1b[?25l", 6);

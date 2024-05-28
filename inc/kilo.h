@@ -56,16 +56,18 @@ typedef struct s_editor_row
 struct s_editor_config
 {
 	t_point			cursor;
+	int				render_x;
 	int				row_offset;
 	int				col_offset;
 	int				screen_rows;
 	int				screen_cols;
 	int				num_rows;
 	t_editor_row	*row;
+	char			*filename;
 	struct termios	orig_termios;
 };
 
-extern struct s_editor_config	g_editor;
+extern struct s_editor_config	E;
 
 // append_buffer.c
 void	ab_append(struct s_abuf *ab, const char *str, int len);
@@ -74,6 +76,8 @@ void	ab_free(struct s_abuf *ab);
 // input.c
 int		editor_read_key(void);
 void	editor_process_keypress(void);
+
+int		editor_row_cursorx_to_render_x(t_editor_row *row, int cursor_x);
 
 // misc.c
 void	print_ascii(char c);

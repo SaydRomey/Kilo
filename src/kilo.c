@@ -1,30 +1,47 @@
 
-// NEXT: https://viewsourcecode.org/snaptoken/kilo/04.aTextViewer.html
-	// (Tabs and the cursor)
-
 #include "kilo.h"
 
-struct s_editor_config	g_editor;
+struct s_editor_config	E;
 
 
 /* init */
 
 void	init_editor(void)
 {
-	g_editor.cursor.x = 0;
-	g_editor.cursor.y = 0;
-	g_editor.row_offset = 0;
-	g_editor.col_offset = 0;
-	g_editor.num_rows = 0;
-	g_editor.row = NULL;
+	E.cursor.x = 0;
+	E.cursor.y = 0;
+	E.render_x = 0;
+	E.row_offset = 0;
+	E.col_offset = 0;
+	E.num_rows = 0;
+	E.row = NULL;
+	E.filename = NULL;
 
-	if (get_window_size(&g_editor.screen_rows, &g_editor.screen_cols) == ERROR)
+	if (get_window_size(&E.screen_rows, &E.screen_cols) == ERROR)
 		exit_error("get_window_size");
+	E.screen_rows -= 1;
 }
 
 // 
 
 /* row operations */
+
+int	editor_row_cursorx_to_render_x(t_editor_row *row, int cursor_x)
+{
+	int	render_x;
+	int	j;
+
+	render_x = 0;
+	j = 0;
+	while (j < cursor_x)
+	{
+		if (row->chars[j] == '\t')
+			render_x += (KILO_TAB_STOP - 1) - (render_x % KILO_TAB_STOP);
+		render_x++;
+		j++;
+	}
+	return (render_x);
+}
 
 void	editor_update_row(t_editor_row *row)
 {
@@ -67,25 +84,28 @@ void	editor_update_row(t_editor_row *row)
 
 void	editor_append_row(char *str, size_t len)
 {
-	g_editor.row = realloc(g_editor.row, sizeof(t_editor_row) * (g_editor.num_rows + 1));
+	E.row = realloc(E.row, sizeof(t_editor_row) * (E.num_rows + 1));
 	
-	int	at = g_editor.num_rows;
-	g_editor.row[at].size = len;
-	g_editor.row[at].chars = malloc(len + 1);
-	memcpy(g_editor.row[at].chars, str, len);
-	g_editor.row[at].chars[len] = '\0';
+	int	at = E.num_rows;
+	E.row[at].size = len;
+	E.row[at].chars = malloc(len + 1);
+	memcpy(E.row[at].chars, str, len);
+	E.row[at].chars[len] = '\0';
 	
-	g_editor.row[at].rsize = 0;
-	g_editor.row[at].render = NULL;
-	editor_update_row(&g_editor.row[at]);
+	E.row[at].rsize = 0;
+	E.row[at].render = NULL;
+	editor_update_row(&E.row[at]);
 
-	g_editor.num_rows++;
+	E.num_rows++;
 }
 
 /* file i/o */
 
 void	editor_open(char *filename)
 {
+	free(E.filename);
+	E.filename = strdup(filename);
+
 	FILE	*fp = fopen(filename, "r");
 	if (!fp)
 		exit_error("fopen");

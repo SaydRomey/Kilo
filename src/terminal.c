@@ -3,7 +3,7 @@
 
 static void	disable_raw_mode(void)
 {
-	if (tcsetattr(STDIN, TCSAFLUSH, &g_editor.orig_termios) == ERROR)
+	if (tcsetattr(STDIN, TCSAFLUSH, &E.orig_termios) == ERROR)
 		exit_error("tcsetattr");
 }
 
@@ -25,11 +25,11 @@ void	enable_raw_mode(void)
 {
 	struct termios	raw;
 
-	if (tcgetattr(STDIN, &g_editor.orig_termios) == ERROR)
+	if (tcgetattr(STDIN, &E.orig_termios) == ERROR)
 		exit_error("tcgetattr");
 	atexit(disable_raw_mode);
 
-	raw = g_editor.orig_termios;
+	raw = E.orig_termios;
 	set_termios_flags(&raw);
 	set_read_timeout(&raw);
 
