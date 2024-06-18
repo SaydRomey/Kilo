@@ -7,6 +7,7 @@
 
 # include <ctype.h>
 # include <errno.h>
+# include <fcntl.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdarg.h>
@@ -29,6 +30,7 @@
 
 enum editor_key
 {
+	BACKSPACE = 127,
 	ARROW_LEFT = 1000,
 	ARROW_RIGHT,
 	ARROW_UP,
