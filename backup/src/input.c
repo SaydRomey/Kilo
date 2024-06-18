@@ -33,7 +33,7 @@ int	editor_read_key(void)
 					{
 						case '1':
 							return (HOME_KEY);
-						case '2':
+						case '3':
 							return (DEL_KEY);
 						case '4':
 							return (END_KEY);
@@ -69,7 +69,7 @@ int	editor_read_key(void)
 		}
 		else if (seq[0] == 'O')
 		{
-			switch (seq[0])
+			switch (seq[1])
 			{
 				case 'H':
 					return (HOME_KEY);

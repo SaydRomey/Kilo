@@ -7,16 +7,16 @@ OBJ_DIR	:= obj
 
 COMPILE	:= gcc
 C_FLAGS	:= -Wall -Werror -Wextra
-C_FLAGS	+= -pedantic -std=c99 #might remove c99 (allows declaration anywhere within a function, whereas ANSI C wants them at top of function or block)
+# C_FLAGS	+= -pedantic -std=c99 #might remove c99 (allows declaration anywhere within a function, whereas ANSI C wants them at top of function or block)
 
 HEADERS	:= -I$(INC_DIR)
 
-REMOVE		:= rm -rf
-NPD			:= --no-print-directory
-VOID		:= /dev/null
-OS			:= $(shell uname)
-USER		:= $(shell whoami)
-TIME		:= $(shell date "+%H:%M:%S")
+REMOVE	:= rm -rf
+NPD		:= --no-print-directory
+VOID	:= /dev/null
+OS		:= $(shell uname)
+USER	:= $(shell whoami)
+TIME	:= $(shell date "+%H:%M:%S")
 
 # **************************************************************************** #
 # -------------------------------- ALL * FILES ------------------------------- #
@@ -31,8 +31,9 @@ all: $(NAME)
 
 $(NAME): $(OBJS) $(INCS)
 	@$(COMPILE) $(C_FLAGS) $(HEADERS) $(OBJS) -o $@
-	@echo "$$TITLE"
-	@echo "Compiled for $(ITALIC)$(BOLD)$(PURPLE)$(USER)$(RESET) \
+
+# @echo "$$TITLE"
+# @echo "Compiled for $(ITALIC)$(BOLD)$(PURPLE)$(USER)$(RESET) \
 		$(CYAN)$(TIME)$(RESET)\n"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) | $(OBJ_DIR)
@@ -57,10 +58,10 @@ fclean: clean
 	@if [ -n "$(wildcard $(NAME))" ]; then \
 		$(REMOVE) $(NAME); \
 		echo "[$(BOLD)$(PURPLE)$(NAME)$(RESET)] \
-		$(GREEN)Library removed$(RESET)"; \
+		$(GREEN)Executable removed$(RESET)"; \
 	else \
 		echo "[$(BOLD)$(PURPLE)$(NAME)$(RESET)] \
-		$(YELLOW)No library to remove$(RESET)"; \
+		$(YELLOW)No executable to remove$(RESET)"; \
 	fi
 
 re: fclean all
