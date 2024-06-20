@@ -3,6 +3,12 @@
 kilo
 
 # object files
+obj/
 *.o
-**/obj/
+
+# vim swap files
+.*.swp
+
+# vscode settings
+.vscode
 

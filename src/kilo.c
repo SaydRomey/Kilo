@@ -33,6 +33,8 @@ struct editor_config E;
 /******************************************************************************/// prototypes
 
 void	editor_set_status_message(const char *fmt, ...);
+void	editor_refresh_screen(void);
+char	*editor_prompt(char *prompt);
 
 
 /******************************************************************************/// terminal
@@ -437,7 +439,14 @@ void	editor_open(char *filename)
 void	editor_save(void)
 {
 	if (E.filename == NULL)
+	{
+		E.filename = editor_prompt("Save as: %s (ESC) to cancel");
+	}
+	if (E.filename == NULL)
+	{
+		editor_set_status_message("Save aborted");
 		return ;
+	}
 
 	int		len;
 	char	*buf = editor_rows_to_string(&len);
@@ -445,7 +454,7 @@ void	editor_save(void)
 	int		fd = open(E.filename, O_RDWR | O_CREAT, 0644);
 	if (fd != -1)
 	{
-		if (ftruncate(fd, len) != -1) // just to be safe if open with O_TRUNC succeeds, but write fails, we still keep most of the data..
+		if (ftruncate(fd, len) != -1)
 		{
 			if (write(fd, buf, len) == len)
 			{
@@ -657,6 +666,52 @@ void	editor_set_status_message(const char *fmt, ...)
 }
 
 /******************************************************************************/// input
+
+char	*editor_prompt(char *prompt)
+{
+	size_t	bufsize = 128;
+	char	*buf = malloc(bufsize);
+
+	size_t	buflen = 0;
+	buf[0] = '\0';
+
+	while (1)
+	{
+		editor_set_status_message(prompt, buf);
+		editor_refresh_screen();
+
+		int	c = editor_read_key();
+		if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE)
+		{
+			if (buflen != 0)
+				buf[--buflen] = '\0';
+		}
+		else if (c == '\x1b')
+		{
+			editor_set_status_message("");
+			free(buf);
+			return (NULL);
+		}
+		else if (c == '\r')
+		{
+			if (buflen != 0)
+			{
+				editor_set_status_message("");
+				return (buf);
+			}
+			else if (!iscntrl(c) && c < 128)
+			{
+				if (buflen == bufsize - 1)
+				{
+					bufsize *= 2;
+					buf = realloc(buf, bufsize);
+				}
+				buf[buflen++] = c;
+				buf[buflen] = '\0';
+			}
+		}
+	}
+}
 
 void	editor_move_cursor(int key)
 {
