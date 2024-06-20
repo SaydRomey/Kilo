@@ -96,7 +96,7 @@ TIMESTAMP	:=$(shell date "+%Y%m%d_%H%M%S")
 BACKUP_NAME	:=$(ROOT_DIR)_$(USER)_$(TIMESTAMP).zip
 MOVE_TO		:= ~/Desktop/$(BACKUP_NAME)
 
-zip: ffclean
+zip: fclean
 	@if which zip > $(VOID); then \
 		zip -r --quiet $(BACKUP_NAME) ./*; \
 		mv $(BACKUP_NAME) $(MOVE_TO); \
